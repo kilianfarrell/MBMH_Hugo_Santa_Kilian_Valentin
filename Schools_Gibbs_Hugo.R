@@ -110,7 +110,7 @@ Gibbs_School = function(N_chain = 500, init){
       
       # maj de alpha 1
       mu_prior_alpha1j = gamma[1] + invT[1,-1]%*%T[-1,-1]%*%(alpha[-1,j]-gamma[-1])
-      sigma2_prior_alpha1j = invT[1,1] - invT[1,-1]%*%T[-1,-1]%*%invT[-1,1] #<- variance négative
+      sigma2_prior_alpha1j = invT[1,1] - matrix(invT[1,-1], ncol=2, nrow = 1)%*%T[-1,-1]%*%matrix(invT[-1,1], ncol = 1, nrow = 2) #<- variance négative
       
      
       
@@ -136,8 +136,8 @@ View(datadf)
 
 
 R = matrix(c(1/10 , 1/200, 1/200, 
-             1/200, 1/100, 1/200, 
-             1/200, 1/200, 1/100), 
+             1/200, 1/10 , 1/200, 
+             1/200, 1/200, 1/10 ), 
            nrow = 3, ncol = 3, byrow = TRUE)
 
 
