@@ -13,7 +13,7 @@ library(Matrix)
 Gibbs_School = function(N_chain = 500, init){
   
   
-  chain = matrix(NA, N_chain + 1, ncol = 136)
+  chain = matrix(NA, N_chain, ncol = 136)
   colnames(chain) = c('theta',
                       'phi',
                       paste0('gamma_', 1:3),
@@ -374,9 +374,9 @@ R = matrix(c(1/10 , 1/200, 1/200,
            nrow = 3, ncol = 3, byrow = TRUE)
 
 
-theta = 0.6#0 #rnorm(1, sd = 10**2)
-phi = 0.01 #rnorm(1, sd = 10**2)
-gamma = c(-0.7,0,1)#c(0, 0, 0) #rnorm(3, sd = 10**2)
+theta = 0 #rnorm(1, sd = 10**2)
+phi = 0 #rnorm(1, sd = 10**2)
+gamma = c(0, 0, 0) #rnorm(3, sd = 10**2)
 beta = c(0, 0, 0, 0, 0, 0, 0, 0) #rnorm(8, sd = 10**2)
 T = matrix(c(10, -3, -3, -3, 135, -65, -3, -65, 135), nrow = 3, ncol = 3, byrow = TRUE) #rWishart(1, df = 3, Sigma = R)[,,1]
 alpha = structure(c(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -394,7 +394,7 @@ init = c(theta, phi, gamma, beta, T, alpha)
 
 
 
-sample = Gibbs_School(N_chain = 200, init)
+sample = Gibbs_School(N_chain = 10000, init)
 
 plot(sample[,'beta_1'], type = 'l', main = 'evolution de beta_1')
 plot(sample[,'beta_2'], type = 'l', main = 'evolution de beta_2')
@@ -411,6 +411,30 @@ plot(sample[,'gamma_3'], type = 'l', main = 'evolution de gamma_3')
 
 plot(sample[,'phi'], type = 'l', main = 'evolution de phi')
 plot(sample[,'theta'], type = 'l', main = 'evolution de theta')
+
+
+
+
+mean(sample[,'beta_1'])
+mean(sample[,'beta_2'])
+mean(sample[,'beta_3'])
+mean(sample[,'beta_4'])
+mean(sample[,'beta_5'])
+mean(sample[,'beta_6'])
+mean(sample[,'beta_7'])
+mean(sample[,'beta_8'])
+
+mean(sample[,'gamma_1'])
+mean(sample[,'gamma_2'])
+mean(sample[,'gamma_3'])
+
+mean(sample[,'phi'])
+mean(sample[,'theta'])
+
+
+
+
+
 
 matplot(sample[,c(paste0("alpha_1_", 1:38))], type = 'l', main = 'evolution de alpha_1')
 matplot(sample[,c(paste0("alpha_2_", 1:38))], type = 'l', main = 'evolution de alpha_2')
