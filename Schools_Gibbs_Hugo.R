@@ -28,6 +28,9 @@ Gibbs_School = function(N_chain = 500, init){
   # init de 
   chain[1,] = init
   
+  taux_accept_phi = 0
+  taux_accept_theta = 0
+  
   for(i in 2:N_chain){
     
     # remise en forme
@@ -84,19 +87,21 @@ Gibbs_School = function(N_chain = 500, init){
     bottom = -0.5*(-(theta*N) + (theta*sqrt(0.0001))^2 + (exp(theta)*sum(exp(phi*LRT)%*%(Y - mu)^2)))
     
     if (runif(1) < exp(top-bottom)){
+      taux_accept_theta = taux_accept_theta + 1
       theta = prop
     }
     
     
     ## maj de phi
     
-    prop_sd = 0.1
+    prop_sd = 0.0075
     prop = phi + rnorm(1, 0, prop_sd)
     
     top =    -0.5*(-(prop*sum(LRT)) + (prop*sqrt(0.0001))^2 + (exp(theta)*sum(exp(prop*LRT)%*%(Y - mu)^2)))
     bottom = -0.5*(-(phi*sum(LRT)) + (phi*sqrt(0.0001))^2 + (exp(theta)*sum(exp(phi*LRT)%*%(Y - mu)^2)))
     
     if (runif(1) < exp(top-bottom)){
+      taux_accept_phi = taux_accept_phi + 1
       phi = prop
     }
     
@@ -353,7 +358,8 @@ Gibbs_School = function(N_chain = 500, init){
     #print(chain[i,])
   }
   
-  
+  print(taux_accept_theta)
+  print(taux_accept_phi)
   
   return(chain)
 }
@@ -394,8 +400,112 @@ init = c(theta, phi, gamma, beta, T, alpha)
 
 
 
-sample = Gibbs_School(N_chain = 10000, init)
+sample = Gibbs_School(N_chain = 11000, init)
 
+sample = sample[1001:nrow(sample),]
+
+
+
+
+val_important = data.frame(matrix(NA, ncol = 5, nrow = 13, 
+                                  dimnames = list(c('beta_1','beta_2','beta_3','beta_4',
+                                                    'beta_5','beta_6','beta_7','beta_8',
+                                                    'gamma_1','gamma_2','gamma_3',
+                                                    'phi','theta'),
+                                                  c("mean", "sd", "val2.5pc", "median", "val97.5pc"))))
+
+val_important['beta_1', 'mean'] = mean(sample[,'beta_1'])
+val_important['beta_2', 'mean'] = mean(sample[,'beta_2'])
+val_important['beta_3', 'mean'] = mean(sample[,'beta_3'])
+val_important['beta_4', 'mean'] = mean(sample[,'beta_4'])
+val_important['beta_5', 'mean'] = mean(sample[,'beta_5'])
+val_important['beta_6', 'mean'] = mean(sample[,'beta_6'])
+val_important['beta_7', 'mean'] = mean(sample[,'beta_7'])
+val_important['beta_8', 'mean'] = mean(sample[,'beta_8'])
+
+val_important['gamma_1', 'mean'] = mean(sample[,'gamma_1'])
+val_important['gamma_2', 'mean'] = mean(sample[,'gamma_2'])
+val_important['gamma_3', 'mean'] = mean(sample[,'gamma_3'])
+
+val_important['phi', 'mean'] = mean(sample[,'phi'])
+val_important['theta', 'mean'] = mean(sample[,'theta'])
+
+
+val_important['beta_1', 'median'] = median(sample[,'beta_1'])
+val_important['beta_2', 'median'] = median(sample[,'beta_2'])
+val_important['beta_3', 'median'] = median(sample[,'beta_3'])
+val_important['beta_4', 'median'] = median(sample[,'beta_4'])
+val_important['beta_5', 'median'] = median(sample[,'beta_5'])
+val_important['beta_6', 'median'] = median(sample[,'beta_6'])
+val_important['beta_7', 'median'] = median(sample[,'beta_7'])
+val_important['beta_8', 'median'] = median(sample[,'beta_8'])
+
+val_important['gamma_1', 'median'] = median(sample[,'gamma_1'])
+val_important['gamma_2', 'median'] = median(sample[,'gamma_2'])
+val_important['gamma_3', 'median'] = median(sample[,'gamma_3'])
+
+val_important['phi', 'median'] = median(sample[,'phi'])
+val_important['theta', 'median'] = median(sample[,'theta'])
+
+
+val_important['beta_1', 'sd'] = sd(sample[,'beta_1'])
+val_important['beta_2', 'sd'] = sd(sample[,'beta_2'])
+val_important['beta_3', 'sd'] = sd(sample[,'beta_3'])
+val_important['beta_4', 'sd'] = sd(sample[,'beta_4'])
+val_important['beta_5', 'sd'] = sd(sample[,'beta_5'])
+val_important['beta_6', 'sd'] = sd(sample[,'beta_6'])
+val_important['beta_7', 'sd'] = sd(sample[,'beta_7'])
+val_important['beta_8', 'sd'] = sd(sample[,'beta_8'])
+
+val_important['gamma_1', 'sd'] = sd(sample[,'gamma_1'])
+val_important['gamma_2', 'sd'] = sd(sample[,'gamma_2'])
+val_important['gamma_3', 'sd'] = sd(sample[,'gamma_3'])
+
+val_important['phi', 'sd'] = sd(sample[,'phi'])
+val_important['theta', 'sd'] = sd(sample[,'theta'])
+
+
+val_important['beta_1', 'val2.5pc'] = val_important['beta_1', 'mean'] - 1.96 * val_important['beta_1', 'sd']/sqrt(10000)
+val_important['beta_2', 'val2.5pc'] = val_important['beta_2', 'mean'] - 1.96 * val_important['beta_2', 'sd']/sqrt(10000)
+val_important['beta_3', 'val2.5pc'] = val_important['beta_3', 'mean'] - 1.96 * val_important['beta_3', 'sd']/sqrt(10000)
+val_important['beta_4', 'val2.5pc'] = val_important['beta_4', 'mean'] - 1.96 * val_important['beta_4', 'sd']/sqrt(10000)
+val_important['beta_5', 'val2.5pc'] = val_important['beta_5', 'mean'] - 1.96 * val_important['beta_5', 'sd']/sqrt(10000)
+val_important['beta_6', 'val2.5pc'] = val_important['beta_6', 'mean'] - 1.96 * val_important['beta_6', 'sd']/sqrt(10000)
+val_important['beta_7', 'val2.5pc'] = val_important['beta_7', 'mean'] - 1.96 * val_important['beta_7', 'sd']/sqrt(10000)
+val_important['beta_8', 'val2.5pc'] = val_important['beta_8', 'mean'] - 1.96 * val_important['beta_8', 'sd']/sqrt(10000)
+
+val_important['gamma_1', 'val2.5pc'] = val_important['gamma_1', 'mean'] - 1.96 * val_important['gamma_1', 'sd']/sqrt(10000)
+val_important['gamma_2', 'val2.5pc'] = val_important['gamma_2', 'mean'] - 1.96 * val_important['gamma_2', 'sd']/sqrt(10000)
+val_important['gamma_3', 'val2.5pc'] = val_important['gamma_3', 'mean'] - 1.96 * val_important['gamma_3', 'sd']/sqrt(10000)
+
+val_important['phi', 'val2.5pc'] = val_important['phi', 'mean'] - 1.96 * val_important['phi', 'sd']/sqrt(10000)
+val_important['theta', 'val2.5pc'] = val_important['theta', 'mean'] - 1.96 * val_important['theta', 'sd']/sqrt(10000)
+
+
+val_important['beta_1', 'val97.5pc'] = val_important['beta_1', 'mean'] + 1.96 * val_important['beta_1', 'sd']/sqrt(10000)
+val_important['beta_2', 'val97.5pc'] = val_important['beta_2', 'mean'] + 1.96 * val_important['beta_2', 'sd']/sqrt(10000)
+val_important['beta_3', 'val97.5pc'] = val_important['beta_3', 'mean'] + 1.96 * val_important['beta_3', 'sd']/sqrt(10000)
+val_important['beta_4', 'val97.5pc'] = val_important['beta_4', 'mean'] + 1.96 * val_important['beta_4', 'sd']/sqrt(10000)
+val_important['beta_5', 'val97.5pc'] = val_important['beta_5', 'mean'] + 1.96 * val_important['beta_5', 'sd']/sqrt(10000)
+val_important['beta_6', 'val97.5pc'] = val_important['beta_6', 'mean'] + 1.96 * val_important['beta_6', 'sd']/sqrt(10000)
+val_important['beta_7', 'val97.5pc'] = val_important['beta_7', 'mean'] + 1.96 * val_important['beta_7', 'sd']/sqrt(10000)
+val_important['beta_8', 'val97.5pc'] = val_important['beta_8', 'mean'] + 1.96 * val_important['beta_8', 'sd']/sqrt(10000)
+
+val_important['gamma_1', 'val97.5pc'] = val_important['gamma_1', 'mean'] + 1.96 * val_important['gamma_1', 'sd']/sqrt(10000)
+val_important['gamma_2', 'val97.5pc'] = val_important['gamma_2', 'mean'] + 1.96 * val_important['gamma_2', 'sd']/sqrt(10000)
+val_important['gamma_3', 'val97.5pc'] = val_important['gamma_3', 'mean'] + 1.96 * val_important['gamma_3', 'sd']/sqrt(10000)
+
+val_important['phi', 'val97.5pc'] = val_important['phi', 'mean'] + 1.96 * val_important['phi', 'sd']/sqrt(10000)
+val_important['theta', 'val97.5pc'] = val_important['theta', 'mean'] + 1.96 * val_important['theta', 'sd']/sqrt(10000)
+
+
+val_important = round(val_important, 4)
+
+
+
+
+
+par(mfrow = c(2,2))
 plot(sample[,'beta_1'], type = 'l', main = 'evolution de beta_1')
 plot(sample[,'beta_2'], type = 'l', main = 'evolution de beta_2')
 plot(sample[,'beta_3'], type = 'l', main = 'evolution de beta_3')
@@ -409,191 +519,15 @@ plot(sample[,'gamma_1'], type = 'l', main = 'evolution de gamma_1')
 plot(sample[,'gamma_2'], type = 'l', main = 'evolution de gamma_2')
 plot(sample[,'gamma_3'], type = 'l', main = 'evolution de gamma_3')
 
+par(mfrow = c(2,1))
+
 plot(sample[,'phi'], type = 'l', main = 'evolution de phi')
 plot(sample[,'theta'], type = 'l', main = 'evolution de theta')
 
-
-
-
-mean(sample[,'beta_1'])
-mean(sample[,'beta_2'])
-mean(sample[,'beta_3'])
-mean(sample[,'beta_4'])
-mean(sample[,'beta_5'])
-mean(sample[,'beta_6'])
-mean(sample[,'beta_7'])
-mean(sample[,'beta_8'])
-
-mean(sample[,'gamma_1'])
-mean(sample[,'gamma_2'])
-mean(sample[,'gamma_3'])
-
-mean(sample[,'phi'])
-mean(sample[,'theta'])
-
-
-
+par(mfrow = c(1,1))
 
 
 
 matplot(sample[,c(paste0("alpha_1_", 1:38))], type = 'l', main = 'evolution de alpha_1')
 matplot(sample[,c(paste0("alpha_2_", 1:38))], type = 'l', main = 'evolution de alpha_2')
 matplot(sample[,c(paste0("alpha_3_", 1:38))], type = 'l', main = 'evolution de alpha_3')
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-for(j in 1:M){
-  
-  #nb_in_school_j = sum(datadf[,'school'] == j)
-  eleve_in_school_j = which(datadf[,'school'] == j)
-  #premier_eleve_in_school_j = eleve_in_school_j[1]
-  
-  
-  tau_j = exp(theta + phi * LRT[eleve_in_school_j])
-  LRT_j = LRT[eleve_in_school_j]
-  VR1_j = VR[eleve_in_school_j, 1]
-  Y_j = Y[eleve_in_school_j]
-  
-  
-  ## maj de alpha_1j
-  
-  mu_j_sans_alpha1j = alpha[2,j] * LRT[eleve_in_school_j] + alpha[3,j] * VR[eleve_in_school_j,1]  +
-    beta[1] * LRT[eleve_in_school_j]^2           + beta[2] * VR[eleve_in_school_j, 2]            +     
-    beta[3] * Gender[eleve_in_school_j]           + beta[4] * School_gender[eleve_in_school_j, 1] +
-    beta[5] * School_gender[eleve_in_school_j, 2] + beta[6] * School_denom[eleve_in_school_j, 1]  +
-    beta[7] * School_denom[eleve_in_school_j, 2]  + beta[8] * School_denom[eleve_in_school_j, 3]
-  
-  
-  sigma2_star_alpha1j = 1/(T[1,1] + sum(tau_j))
-  mu_star_alpha1j = sigma2_star_alpha1j * (T[1,1]*gamma[1] + 
-                                             sum(tau_j*(Y_j - mu_j_sans_alpha1j)))
-  
-  alpha[1,j] = rnorm(1, mean = mu_star_alpha1j, sd = sqrt(sigma2_star_alpha1j))
-  
-  
-  ## maj de alpha_2j
-  #  on doit recalculer mu_j avec les nouvelles valeurs de alpha_1j
-  
-  mu_j_sans_alpha2j = alpha[1,j] + alpha[3,j] * VR[eleve_in_school_j,1] +
-    beta[1] * LRT[eleve_in_school_j]^2           + beta[2] * VR[eleve_in_school_j, 2]            +     
-    beta[3] * Gender[eleve_in_school_j]           + beta[4] * School_gender[eleve_in_school_j, 1] +
-    beta[5] * School_gender[eleve_in_school_j, 2] + beta[6] * School_denom[eleve_in_school_j, 1]  +
-    beta[7] * School_denom[eleve_in_school_j, 2]  + beta[8] * School_denom[eleve_in_school_j, 3]
-  
-  
-  sigma2_star_alpha2j = 1/(T[2,2] + sum(tau_j*LRT_j^2))
-  mu_star_alpha2j = sigma2_star_alpha2j * (T[2,2]*gamma[2] + 
-                                             sum(tau_j*LRT_j*(Y_j - mu_j_sans_alpha2j)))
-  
-  alpha[2,j] = rnorm(1, mean = mu_star_alpha2j, sd = sqrt(sigma2_star_alpha2j))
-  
-  
-  ## maj de alpha_3j
-  #  on doit recalculer mu_j avec les nouvelles valeurs de alpha_1j et de alpha_2j
-  
-  mu_j_sans_alpha3j = alpha[1,j] + alpha[2,j] * LRT[eleve_in_school_j] + 
-    beta[1] * LRT[eleve_in_school_j]^2           + beta[2] * VR[eleve_in_school_j, 2]            +     
-    beta[3] * Gender[eleve_in_school_j]           + beta[4] * School_gender[eleve_in_school_j, 1] +
-    beta[5] * School_gender[eleve_in_school_j, 2] + beta[6] * School_denom[eleve_in_school_j, 1]  +
-    beta[7] * School_denom[eleve_in_school_j, 2]  + beta[8] * School_denom[eleve_in_school_j, 3]
-  
-  
-  sigma2_star_alpha3j = 1/(T[3,3] + sum(tau_j*VR1_j^2))
-  mu_star_alpha3j = sigma2_star_alpha3j * (T[3,3]*gamma[3] + 
-                                             sum(tau_j*VR1_j*(Y_j - mu_j_sans_alpha3j)))
-  
-  alpha[3,j] = rnorm(1, mean = mu_star_alpha3j, sd = sqrt(sigma2_star_alpha3j))
-  
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-mu_sans_beta = rep(NaN, N)
-for(j in 1:M){
-  
-  eleve_in_school_j = which(datadf[,'school'] == j)
-  nb_in_school_j = sum(datadf[,'school'] == j)
-  
-  LRT_j = LRT[eleve_in_school_j]
-  VR1_j = VR[eleve_in_school_j, 1]
-  
-  mu_j_sans_beta = alpha[1,j] + alpha[2,j] * LRT_j + alpha[3,j] * VR1_j
-  
-  mu_sans_beta[eleve_in_school_j] = mu_j_sans_beta
-}
-
-somme_sigma_beta = 0
-somme_mu_beta = 0
-for(k in 1:N){
-  somme_sigma_beta = somme_sigma_beta + 
-    tau[k] * tcrossprod(c(LRT[k]^2, 
-                          VR[k,2], 
-                          Gender[k], 
-                          School_gender[k,1], 
-                          School_gender[k,2], 
-                          School_denom[k,1], 
-                          School_denom[k,2], 
-                          School_denom[k,3]))
-  somme_mu_beta = somme_mu_beta + 
-    c(LRT[k]^2, 
-      VR[k,2], 
-      Gender[k], 
-      School_gender[k,1], 
-      School_gender[k,2], 
-      School_denom[k,1], 
-      School_denom[k,2], 
-      School_denom[k,3]) * (Y[k] - mu_sans_beta[k]) * tau[k]
-}
-
-
-sigma_star_beta = inv(diag(10^-4, ncol=8, nrow=8) + somme_sigma_beta)
-mu_star_beta = sigma_star_beta %*% matrix(somme_mu_beta, ncol = 1, nrow = 8)
-
-beta = mvrnorm(mu = mu_star_beta, Sigma = sigma_star_beta)
