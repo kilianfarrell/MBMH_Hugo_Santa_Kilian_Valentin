@@ -10,7 +10,7 @@ poiidx <- c(grep('beta\\.[0-9]+', colnames(post)),
 poi <- post[, poiidx] 
 
 summary(as.mcmc(poi)); 
-# quit('no')
+
 
 ranks <- post[, grep('ranks\\.[0-9]+', colnames(post))] 
 ranksm <- apply(ranks, 2, mean) 
@@ -28,4 +28,4 @@ ex <- list(name = "Schools", parameters = pars,
 
 jagspost <- runExample(ex, engine = 'JAGS')
 summary(jagspost$coda)
-# plot(jagspost$coda);
+
